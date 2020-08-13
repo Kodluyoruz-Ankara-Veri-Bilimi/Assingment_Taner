@@ -16,7 +16,10 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.preprocessing import scale
 from sklearn.tree import DecisionTreeClassifier
-
+from sklearn.ensemble import RandomForestClassifier
+import time
+from sklearn.neural_network import MLPRegressor
+from sklearn.neural_network import MLPClassifier
 
 class Basic_Information():
 
@@ -231,38 +234,80 @@ class Model():
             
             y_pred = pcr_model.predict(X_reduced_test)
             
-            print("mean_squared_error  :" , np.sqrt(mean_squared_error(y_test, y_pred)))
+            print("RMSE  :" , np.sqrt(mean_squared_error(y_test, y_pred)))
             
             
             print("r2_score : " , r2_score(y_test, y_pred))
             
             
             
-    def dec_tree_clas(self,X_train= None,X_test= None,y_train= None,y_test= None):
-        
-                       
-            cart = DecisionTreeClassifier()
-            cart_model = cart.fit(X_train,y_train)
+    def catmodel(self,X_train= None,X_test= None,y_train= None,y_test= None,cat_model=None):
+             
+            start = time.process_time()
+                      
+            cart_model = cat_model.fit(X_train,y_train)
+           
+            print("Time  :" ,time.process_time() - start)
+            
             y_pred = cart_model.predict(X_test)
             
-            print("Accuracy_score : " , accuracy_score(y_test, y_pred))
+            print("Confusion Matrix  :") 
+            
+            print(confusion_matrix(y_test, y_pred))
+            
+            print("Accuracy  :" , accuracy_score(y_test,y_pred))
+              
+            print("CV Score  :" , cross_val_score(cart_model,X_test,y_test,cv=10).mean())
+           
+            print("Model Report : ")
+            
+            print(classification_report(y_test,y_pred))
+        
+        
+            from sklearn.metrics import roc_auc_score,roc_curve
+            import matplotlib.pyplot as plt
+        
+            logit_roc_auc =  roc_auc_score(y_test, cart_model.predict(X_test))
+            
+            fpr, tpr, thresholds = roc_curve(y_test, cart_model.predict_proba(X_test)[:,1])
+            
+            plt.figure()
+            plt.plot(fpr, tpr, label='AUC (area = %0.2f)' % logit_roc_auc)
+            plt.plot([0, 1], [0, 1],'r--')
+            plt.xlim([0.0, 1.0])
+            plt.ylim([0.0, 1.05])
+            plt.xlabel('False Positive Oranı')
+            plt.ylabel('True Positive Oranı')
+            plt.title('ROC')
+            plt.show()
+      
+            print("AUC :", logit_roc_auc)
     
-    def Grid_CV(self,X_train= None,y_train = None,cart_grid= None):
+    def Grid_CV(self,X_train= None,y_train = None,params= None,model=None):
             
-            cart = DecisionTreeClassifier()
-            cart_cv = GridSearchCV(cart, cart_grid, cv=10, n_jobs = -1, verbose = 2)
-            cart_cv_model = cart_cv.fit(X_train, y_train)
             
-            print(cart_cv_model.best_params_)
+            model_cv = GridSearchCV(model, params, cv=10, n_jobs = -1, verbose = 2)
+            model_tuned = model_cv.fit(X_train, y_train)
+            
+            print(model_tuned.best_params_)
+            
+    
+    def regmodel(self,X_train= None,X_test= None,y_train= None,y_test= None,reg_model=None):
+        
+            start = time.process_time()
+            
+            re_model =reg_model.fit(X_train, y_train)
+            
+            print("Time  :" ,time.process_time() - start)
+            
+            y_pred = re_model.predict(X_test)
+            
+            print( "RMSE  :", np.sqrt(mean_squared_error(y_test, y_pred)))
+            
+            print("r2_score : " , r2_score(y_test, y_pred))
             
         
         
         
-        
-
-
-# In[ ]:
-
-
 
 
