@@ -17,9 +17,19 @@ from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.preprocessing import scale
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from xgboost import XGBClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neighbors import KNeighborsRegressor
 import time
 from sklearn.neural_network import MLPRegressor
 from sklearn.neural_network import MLPClassifier
+from sklearn.svm import SVC
+from sklearn.naive_bayes import GaussianNB,MultinomialNB,BernoulliNB
+from sklearn.svm import SVR
+
+
+
 
 class Basic_Information():
 
@@ -29,11 +39,13 @@ class Basic_Information():
     
     def Info(self):
         
+        print("\nİlk beş değer\n")
         print(self.data.head())
        
+        print("\nDescribe\n")
         print(self.data.describe().T)
         
-        print("\nIndex, columns\n")
+        print("\nIndex, Columns\n")
         print(self.data.shape)
         
         print("\nDeğişken tipleri\n")
@@ -168,47 +180,9 @@ class Model():
             self.data=data
     
     
-    def logreg(self,X_train=None,X_test= None,y_train=None,y_test= None):
-            
-            loj=LogisticRegression(solver = "liblinear")
-            
-            loj_model=loj.fit(X_train,y_train)
-            
-            y_pred=loj_model.predict(X_test)
-            
-            print("Confusion Matrix  :") 
-            
-            print(confusion_matrix(y_test, y_pred))
-            
-            print("Accuracy  :" , accuracy_score(y_test,y_pred))
-              
-            print("CV Score  :" , cross_val_score(loj_model,X_test,y_test,cv=10).mean())
-           
-            print("Model Report : ")
-            
-            print(classification_report(y_test,y_pred))
-        
-        
-            from sklearn.metrics import roc_auc_score,roc_curve
-            import matplotlib.pyplot as plt
-        
-            logit_roc_auc =  roc_auc_score(y_test, loj_model.predict(X_test))
-            
-            fpr, tpr, thresholds = roc_curve(y_test, loj_model.predict_proba(X_test)[:,1])
-            
-            plt.figure()
-            plt.plot(fpr, tpr, label='AUC (area = %0.2f)' % logit_roc_auc)
-            plt.plot([0, 1], [0, 1],'r--')
-            plt.xlim([0.0, 1.0])
-            plt.ylim([0.0, 1.05])
-            plt.xlabel('False Positive Oranı')
-            plt.ylabel('True Positive Oranı')
-            plt.title('ROC')
-            plt.show()
-      
-            print(logit_roc_auc)
     
-    def linear_pca(self,X_train= None,X_test= None,y_train= None,y_test= None):
+    
+    def pcaa(self,X_train= None,X_test= None):
         
         
         
@@ -217,7 +191,7 @@ class Model():
             X_reduced_train = pca.fit_transform(scale(X_train))
             X_reduced_test = pca.fit_transform(scale(X_test))
             
-            print(np.cumsum(np.round(pca.explained_variance_ratio_, decimals = 4)*100)[0:60])
+            print(np.cumsum(np.round(pca.explained_variance_ratio_, decimals = 4)*100))
         
             import matplotlib.pyplot as plt
             
@@ -227,20 +201,8 @@ class Model():
             plt.ylabel('variance %')
             plt.xticks(features);
             
-            lm = LinearRegression()
-            
-            pcr_model = lm.fit(X_reduced_train, y_train)
-            
-            
-            y_pred = pcr_model.predict(X_reduced_test)
-            
-            print("RMSE  :" , np.sqrt(mean_squared_error(y_test, y_pred)))
-            
-            
-            print("r2_score : " , r2_score(y_test, y_pred))
-            
-            
-            
+            return X_reduced_train,X_reduced_test
+        
     def catmodel(self,X_train= None,X_test= None,y_train= None,y_test= None,cat_model=None):
              
             start = time.process_time()
