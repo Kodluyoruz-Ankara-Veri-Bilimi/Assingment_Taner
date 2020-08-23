@@ -4,7 +4,7 @@
 
 ![banka1](https://user-images.githubusercontent.com/25422464/90980667-71af6880-e565-11ea-848c-8e3a140152d6.JPG)
 
-*Svm_Time = 1034 (Dengeli bir grafik görüntüsü için 0 yazıldı).
+*Svm_Time = 1034 (Dengeli bir grafik görüntüsü için 0 yazıldı ).
 
 * Banka modelinde en iyi performansı XGB verdi. 
 
